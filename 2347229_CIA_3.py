@@ -34,15 +34,14 @@ def preprocess_text(text):
     tokens = [stemmer.stem(lemmatizer.lemmatize(word)) for word in tokens]
     return ' '.join(tokens) 
 
-# Define function for 3D plot visualization
-def plot_3d(data):
-    fig = plt.figure()
+def plot_3d(data, x_column, y_column, z_column):
+    fig = plt.figure(figsize=(6, 6)) 
     ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(data['Age'], data['Rating'], data['Positive Feedback Count'], c='skyblue', s=60)
-    ax.set_xlabel('Age')
-    ax.set_ylabel('Rating')
-    ax.set_zlabel('Positive Feedback Count')
-    st.pyplot(fig)
+    ax.scatter(data[x_column], data[y_column], data[z_column], c='purple', s=40)
+    ax.set_xlabel(str(x_column))
+    ax.set_ylabel(str(y_column))
+    ax.set_zlabel(str(z_column))
+    st.write(fig)
 
 # Define function for image processing
 # Define function for image processing
@@ -68,7 +67,6 @@ def process_image(image, technique):
         return cv2.cvtColor(blurred_image, cv2.COLOR_BGR2RGB)  # Convert color format to RGB
 
 
-
 # Streamlit UI
 st.title('Womens Clothing E-Commerce Reviews Analysis')
 st.subheader("📊 Dataset")
@@ -81,7 +79,14 @@ choice = st.sidebar.selectbox('Select Analysis', tabs)
 # Render different tabs based on user choice
 if choice == '3D Plot Visualization':
     st.subheader('3D Plot Visualization')
-    plot_3d(data)
+
+    # Select columns for 3D plot
+    x_column = st.selectbox('Select X-axis Column', data.columns)
+    y_column = st.selectbox('Select Y-axis Column', data.columns)
+    z_column = st.selectbox('Select Z-axis Column', data.columns)
+
+    # Plot 3D graph
+    plot_3d(data, x_column, y_column, z_column)
 elif choice == 'Image Processing':
     st.title('Image Processing')
 
