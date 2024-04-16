@@ -13,6 +13,10 @@ import cv2
 from wordcloud import WordCloud
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import nltk
+
+# Download required NLTK resources
+nltk.download('punkt')
 
 # Load a sample of the dataset to reduce memory usage
 @st.cache_data
