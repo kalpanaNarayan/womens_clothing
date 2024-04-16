@@ -10,16 +10,17 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer, WordNetLemmatizer
 import re
 import cv2
+from wordcloud import WordCloud
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity, pairwise_distances
+from sklearn.metrics.pairwise import cosine_similarity
 
-# Load the dataset
+# Load a sample of the dataset to reduce memory usage
 @st.cache_data
-def load_data():
-    return pd.read_csv("WomensClothingE-CommerceReviews.csv")
+def load_sample_data(sample_size=1000):
+    data = pd.read_csv("WomensClothingE-CommerceReviews.csv")
+    return data.sample(min(sample_size, len(data)))
 
-data = load_data()
-
+data = load_sample_data()
 
 # Define functions for text processing
 def preprocess_text(text):
@@ -33,7 +34,6 @@ def preprocess_text(text):
     tokens = [stemmer.stem(lemmatizer.lemmatize(word)) for word in tokens]
     return ' '.join(tokens) 
 
-
 # Define function for 3D plot visualization
 def plot_3d(data):
     fig = plt.figure()
@@ -43,8 +43,8 @@ def plot_3d(data):
     ax.set_ylabel('Rating')
     ax.set_zlabel('Positive Feedback Count')
     st.pyplot(fig)
-    
 
+# Define function for image processing
 # Define function for image processing
 def process_image(image, technique):
     # Process the image based on the selected technique
@@ -66,6 +66,7 @@ def process_image(image, technique):
     elif technique == 'Applying Filters':
         blurred_image = cv2.GaussianBlur(image, (5, 5), 0)  # Increase the kernel size
         return cv2.cvtColor(blurred_image, cv2.COLOR_BGR2RGB)  # Convert color format to RGB
+
 
 
 # Streamlit UI
@@ -134,3 +135,10 @@ elif choice == 'Text Similarity Analysis':
         ax.set_xlabel('Cosine Similarity')
         ax.set_title('Text Similarity with User Input')
         st.pyplot(fig)
+
+        # Create a word cloud
+        wordcloud = WordCloud(width=800, height=400, background_color='white').generate(processed_text)
+        st.subheader("Word Cloud")
+        plt.imshow(wordcloud, interpolation='bilinear')
+        plt.axis('off')
+        st.pyplot(plt.gcf())  # Pass the current figure explicitly
